@@ -9,4 +9,9 @@ public class UserNotFoundException extends RuntimeException {
         super("Couldn't find user with id = " + userId);
         System.out.println("Couldn't find user with id = " + userId);
     }
+
+    public UserNotFoundException(String s) {
+        super("Couldn't find users with name/phone = " + s);
+        System.out.println("Couldn't find users with name/phone = " + s);
+    }
 }

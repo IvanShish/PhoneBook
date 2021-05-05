@@ -79,4 +79,9 @@ public class User {
         return Objects.equals(this.name, employee.name) && Objects.equals(this.surname, employee.surname)
                 && Objects.equals(this.phone, employee.phone);
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId, name, surname, phone);
+    }
 }
