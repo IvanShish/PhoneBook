@@ -1,15 +1,13 @@
 package com.mydomain.phonebook.dao;
 
+import com.mydomain.phonebook.PhoneBookRegExp;
 import com.mydomain.phonebook.entities.PhoneBookMember;
 import com.mydomain.phonebook.entities.User;
-import com.mydomain.phonebook.exceptions.IllegalUserIDException;
-import com.mydomain.phonebook.exceptions.UserAlreadyExistsException;
-import com.mydomain.phonebook.exceptions.UserNotFoundException;
+import com.mydomain.phonebook.exceptions.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Repository
 public class PhoneBookDAOImpl implements PhoneBookDAO {
@@ -17,21 +15,6 @@ public class PhoneBookDAOImpl implements PhoneBookDAO {
     private static Map<Long, PhoneBookMember> phoneBookMembers = new HashMap<>();
 
     public PhoneBookDAOImpl() {
-//        User user1 = new User(AUTO_ID.getAndIncrement(), "Ivan", "Shishkin", "88005553535");
-//        users.put(user1.getUserId(), user1);
-//
-//        User user2 = new User(AUTO_ID.getAndIncrement(), "Anthony", "McBride", "88124955665");
-//        users.put(user2.getUserId(), user2);
-//
-//        User user3 = new User(AUTO_ID.getAndIncrement(), "Michael", "Norman", "88122764767");
-//        users.put(user3.getUserId(), user3);
-//
-//        User user4 = new User(AUTO_ID.getAndIncrement(), "Lionel", "Hall", "88122764767");
-//        users.put(user4.getUserId(), user4);
-//
-//        User user5 = new User(AUTO_ID.getAndIncrement(), "Ruth", "Willis", "88127507567");
-//        users.put(user5.getUserId(), user5);
-
         PhoneBookMember user1 = new PhoneBookMember(AUTO_ID.getAndIncrement(), "Ivan", "Shishkin", "88005553535");
         List<User> phoneBookUser1 = new ArrayList<>();
         phoneBookUser1.add(new User(user1.incrementId(), "Anthony", "McBride", "88124955665"));
@@ -60,16 +43,19 @@ public class PhoneBookDAOImpl implements PhoneBookDAO {
         if (phoneBookMembers.containsValue(newUser)) {
             throw new UserAlreadyExistsException(user);
         }
-        else if (newUser.getUserId() == null) {
+        if (newUser.getUserId() == null) {
             newUser.setUserId(AUTO_ID.getAndIncrement());
         }
         else if (newUser.getUserId() < 0) {
             throw new IllegalUserIDException(newUser.getUserId());
         }
-        else if (phoneBookMembers.containsKey(newUser.getUserId())) {
+        if (phoneBookMembers.containsKey(newUser.getUserId())) {
             throw new UserAlreadyExistsException(newUser.getUserId());
         }
-        phoneBookMembers.put(newUser.getUserId(), newUser);
+
+        if (PhoneBookRegExp.checkWithRegExp(newUser.getName(), newUser.getSurname(), newUser.getPhone())) {
+            phoneBookMembers.put(newUser.getUserId(), newUser);
+        }
     }
 
     @Override
@@ -79,12 +65,14 @@ public class PhoneBookDAOImpl implements PhoneBookDAO {
 
     @Override
     public void edit(User newUser, PhoneBookMember userToEdit) {
-        phoneBookMembers.put(userToEdit.getUserId(), new PhoneBookMember(
-                userToEdit.getUserId(),
-                newUser.getName() != null ? newUser.getName() : userToEdit.getName(),
-                newUser.getSurname() != null ? newUser.getSurname() : userToEdit.getSurname(),
-                newUser.getPhone() != null ? newUser.getPhone() : userToEdit.getPhone()
-        ));
+        if (PhoneBookRegExp.checkWithRegExp(newUser.getName(), newUser.getSurname(), newUser.getPhone())) {
+            phoneBookMembers.put(userToEdit.getUserId(), new PhoneBookMember(
+                    userToEdit.getUserId(),
+                    newUser.getName() != null ? newUser.getName() : userToEdit.getName(),
+                    newUser.getSurname() != null ? newUser.getSurname() : userToEdit.getSurname(),
+                    newUser.getPhone() != null ? newUser.getPhone() : userToEdit.getPhone()
+            ));
+        }
     }
 
     @Override
@@ -114,18 +102,20 @@ public class PhoneBookDAOImpl implements PhoneBookDAO {
         List<User> userPhoneBook = userById.getPhoneBook();
         if (userPhoneBook.contains(user)) {
             throw new UserAlreadyExistsException(user);
-        } else if (user.getUserId() == null) {
+        }
+        if (user.getUserId() == null) {
             user.setUserId(userById.incrementId());
-        } else if (user.getUserId() < 0) {
+        }
+        else if (user.getUserId() < 0) {
             throw new IllegalUserIDException(user.getUserId());
         }
-        else {
-            for (User u : userPhoneBook) {
-                if (u.getUserId().equals(user.getUserId())) throw new UserAlreadyExistsException(userById.getUserId());
-            }
+        for (User u : userPhoneBook) {  // check if there is already a user with the given id
+            if (u.getUserId().equals(user.getUserId())) throw new UserAlreadyExistsException(userById.getUserId());
         }
 
-        userById.addNewUserInPhoneBook(user);
+        if (PhoneBookRegExp.checkWithRegExp(user.getName(), user.getSurname(), user.getPhone())) {
+            userById.addNewUserInPhoneBook(user);
+        }
     }
 
     @Override
@@ -154,7 +144,7 @@ public class PhoneBookDAOImpl implements PhoneBookDAO {
 
         for (int i = 0; i < userPhoneBook.size(); i++) {
             User u = userPhoneBook.get(i);
-            if (u.getUserId().equals(userId)) {
+            if (u.getUserId().equals(userId) && PhoneBookRegExp.checkWithRegExp(user.getName(), user.getSurname(), user.getPhone())) {
                 userById.editUserInPhoneBook(new User(
                         u.getUserId(),
                         user.getName() != null ? user.getName() : u.getName(),
