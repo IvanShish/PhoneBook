@@ -14,7 +14,7 @@
     <name>PhoneBook</name>
     <description>Test task in DINS (Intern Java Developer (Collaboration Tool))</description>
     <properties>
-        <java.version>11</java.version>
+        <java.version>1.8</java.version>
     </properties>
     <dependencies>
         <dependency>
@@ -43,6 +43,10 @@
                 <plugin>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>3.7.0</version>
+                    <configuration>
+                        <release>15</release>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
