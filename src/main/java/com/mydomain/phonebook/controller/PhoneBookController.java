@@ -11,8 +11,6 @@ import org.springframework.hateoas.EntityModel;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,7 +40,7 @@ public class PhoneBookController {
 
     @PostMapping
     public void addUser(@RequestBody User newUser) throws UserAlreadyExistsException, IllegalUserIDException, PhoneNotMatchException, NameNotMatchException {
-//        curl -X POST -H "Content-Type:application/json" -H "Cache-Control:no-cache" localhost:8080/data/users -d "{\"name\":\"add\", \"surname\":\"test\", \"phone\":\"881232819345\"}"
+//        curl -X POST -H "Content-Type:application/json" -H "Cache-Control:no-cache" localhost:8080/data/users -d "{\"name\":\"add\", \"surname\":\"test\", \"phone\":\"88123281934\"}"
         phoneBookService.add(newUser);
     }
 
