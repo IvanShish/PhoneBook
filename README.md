@@ -34,7 +34,7 @@ Test task in DINS (Intern Java Developer (Collaboration Tool))
 
 ## Как запустить
 
-Запускается согласно инструкции, которая есть в документации к Spring Boot (`./mvnw clean spring-boot:run` или `mvn clean spring-boot:run`).
+Запускается согласно инструкции, которая есть в документации к Spring Boot (`./mvnw clean spring-boot:run` или `mvn clean spring-boot:run`). Помимо этого, приложение загружено на Heroku и доступно по ссылке: https://myphonebookappp.herokuapp.com/data/users.
 
 ## Как пользоваться
 
